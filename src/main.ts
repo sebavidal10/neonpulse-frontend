@@ -1,7 +1,3 @@
-// document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
-// <div>hola</div>
-// `;
-
 const appContainer = document.getElementById('app');
 
 if (appContainer) {
