@@ -16,6 +16,21 @@ El proyecto demuestra cómo construir aplicaciones **Vanilla mantenibles y escal
 
 ---
 
+## 🚀 Despliegue en GitHub Pages
+
+El proyecto incluye configuración nativa para desplegarse automáticamente en **GitHub Pages** mediante **GitHub Actions**.
+
+### 🛠️ Configuración Automática (CI/CD)
+El archivo `.github/workflows/deploy.yml` se encarga de compilar y publicar la app cada vez que haces `push` a la rama `main`.
+
+**Pasos en GitHub:**
+1. Ve a la pestaña **Settings** de tu repositorio en GitHub.
+2. En la barra lateral, selecciona **Pages**.
+3. En **Build and deployment > Source**, selecciona **GitHub Actions**.
+4. ¡Listo! Al hacer `git push origin main`, tu sitio se publicará en `https://<usuario>.github.io/<repositorio>/`.
+
+---
+
 ## 🎯 Objetivos del Curso y Aprendizaje
 
 - **El Valor del Tipado Fuerte (Strong Typing):**
@@ -33,11 +48,9 @@ El proyecto demuestra cómo construir aplicaciones **Vanilla mantenibles y escal
   - Manejo de excepciones por componente para evitar caídas globales en la UI.
   - Renderizado declarativo mediante funciones de plantilla TS.
 
-- **Desarrollo Asistido por IA:**
-  - Flujo de trabajo de *pair-programming* con IA para acelerar el maquetado, diseño UI y resolución de problemas.
-
-- **Tooling de Vanguardia:**
-  - Configuración y bundling ultrarrápido con **Vite 8** e integración con **Tailwind CSS v4** (`@tailwindcss/vite`).
+- **Desarrollo Asistido por IA & Despliegue Continuo:**
+  - Flujo de trabajo de *pair-programming* con IA.
+  - Despliegue continuo (CI/CD) listo para producción con GitHub Actions.
 
 ---
 
@@ -46,17 +59,7 @@ El proyecto demuestra cómo construir aplicaciones **Vanilla mantenibles y escal
 - **Core:** TypeScript + Vite 8
 - **Estilos & UI:** Tailwind CSS v4 (`@tailwindcss/vite`)
 - **Iconografía:** Lucide Icons (`lucide`)
-- **Arquitectura:** Componentes modulares Vanilla con TypeScript estricto y arquitectura por componentes.
-
----
-
-## 🔥 Características Principales
-
-- **Banner de Evento Destacado (Headliner):** Componente a ancho completo para promocionar la tocata principal del mes (*The Clash, London Calling 50th Anniversary*).
-- **Tarjetas de Concierto Homogéneas (`h-full`):** Grid responsivo alineado donde todas las tarjetas comparten exactamente la misma altura horizontal.
-- **Portadas Fotográficas de Rock:** Imágenes de alta calidad por cada evento con zoom dinámico al hacer hover y fallbacks elegantes ante errores de carga.
-- **Botones Rockeros de Alto Contraste:** Estilo metálico y crimson de alto impacto visual sin gradientes neón suaves.
-- **Resiliencia & Manejo de Errores:** Manejo de excepciones a nivel de componente para evitar fallas globales si un evento individual presenta inconsistencias en datos o imágenes.
+- **CI/CD:** GitHub Actions (Deploy automático a GitHub Pages)
 
 ---
 
@@ -64,6 +67,9 @@ El proyecto demuestra cómo construir aplicaciones **Vanilla mantenibles y escal
 
 ```text
 neonpulse-frontend/
+├── .github/
+│   └── workflows/
+│       └── deploy.yml          # Workflow de integración y despliegue continuo (GitHub Pages)
 ├── public/
 │   └── images/                 # Portadas e imágenes de conciertos
 ├── src/
@@ -77,12 +83,12 @@ neonpulse-frontend/
 ├── index.html                  # Plantilla HTML semántica principal
 ├── package.json                # Dependencias y scripts del proyecto
 ├── tsconfig.json               # Configuración del compilador TypeScript
-└── vite.config.ts              # Configuración de Vite con plugin de Tailwind CSS v4
+└── vite.config.ts              # Configuración de Vite (base: './') y Tailwind CSS v4
 ```
 
 ---
 
-## 🛠️ Instalación y Ejecución
+## 🛠️ Instalación y Ejecución Local
 
 ### 1. Clonar el repositorio e instalar dependencias:
 ```bash
@@ -97,11 +103,6 @@ npm run dev
 ### 3. Compilar para producción y verificar tipos TypeScript:
 ```bash
 npm run build
-```
-
-### 4. Previsualizar el build de producción:
-```bash
-npm run preview
 ```
 
 ---
