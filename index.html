@@ -5,11 +5,45 @@
   <meta charset="UTF-8" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NeonPulse - Cartelera de Conciertos</title>
+  <title>NeonPulse - Punk Rock Live Cartelera</title>
 </head>
 
-<body>
-  <div id="app"></div>
+<body class="px-4 py-5 md:px-8 md:py-6 max-w-7xl mx-auto">
+  <div id="app">
+    <!-- Header compacto de alto contraste -->
+    <header class="flex flex-col md:flex-row md:items-end justify-between pb-4 mb-5 border-b border-zinc-800 gap-3">
+      <div>
+        <div class="inline-flex items-center gap-2 px-2.5 py-0.5 mb-1.5 rounded bg-red-950/80 border border-red-800 text-red-400 text-[11px] font-black uppercase tracking-widest">
+          <span>⚡ PUNK ROCK & LIVE SESSIONS</span>
+        </div>
+        <h1 class="text-3xl md:text-5xl font-black uppercase tracking-tighter text-white leading-none">
+          NEON<span class="text-red-600">PULSE</span>
+        </h1>
+      </div>
+      <p class="text-zinc-400 text-xs md:text-sm font-medium tracking-wide">
+        Cartelera Oficial de Tocatas & Conciertos Underground
+      </p>
+    </header>
+
+    <main>
+      <!-- Banner de Evento Destacado -->
+      <div id="contenedor-banner"></div>
+
+      <!-- Barra de sección compacta -->
+      <div class="flex items-center justify-between mb-4 pt-2">
+        <h2 class="text-lg md:text-xl font-black uppercase tracking-wider text-white flex items-center gap-2">
+          <span class="w-2 h-5 bg-red-600 rounded-xs inline-block"></span>
+          Cartelera de Conciertos
+        </h2>
+        <span class="text-[11px] font-extrabold uppercase tracking-wider text-zinc-300 bg-zinc-900 px-3 py-1 rounded border border-zinc-800">
+          6 Fechas Confirmadas
+        </span>
+      </div>
+
+      <!-- Grid de Cartelera Tighter (gap-5) con Altura Homogénea -->
+      <div id="contenedor-cartelera" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 items-stretch"></div>
+    </main>
+  </div>
   <script type="module" src="/src/main.ts"></script>
 </body>
 

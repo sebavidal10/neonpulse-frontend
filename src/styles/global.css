@@ -1,0 +1,22 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --color-punk-black: #050505;
+  --color-punk-dark: #0f0f12;
+  --color-punk-red: #dc2626;
+  --color-punk-silver: #e4e4e7;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: #050505;
+  color: #f4f4f5;
+  min-height: 100vh;
+  /* Fondo estilo vinilo/cuero negro con sutiles reflectores de escenario */
+  background-image: 
+    radial-gradient(circle at 50% 0%, rgba(220, 38, 38, 0.14) 0%, transparent 45%),
+    radial-gradient(circle at 100% 100%, rgba(255, 255, 255, 0.04) 0%, transparent 35%);
+  background-attachment: fixed;
+}

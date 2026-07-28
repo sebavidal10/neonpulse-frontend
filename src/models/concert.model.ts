@@ -1,4 +1,4 @@
-// definir enum con valores
+// Definir enum con valores de estado del concierto
 export enum ConcertStatus {
   SCHEDULED = 'SCHEDULED',
   LIVE = 'LIVE',
@@ -14,4 +14,6 @@ export interface Concert {
   date: Date;
   time?: string; // HH:mm
   status: ConcertStatus;
+  imageUrl?: string;
+  isFeatured?: boolean;
 }
