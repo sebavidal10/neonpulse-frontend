@@ -1,0 +1,66 @@
+[
+  {
+    "id": "1",
+    "title": "London Calling 50th Anniversary Live",
+    "band": "The Clash & Special Guests",
+    "date": "2026-08-14",
+    "time": "21:30",
+    "status": "LIVE",
+    "imageUrl": "http://localhost:5173/images/punk1.png",
+    "isFeatured": true
+  },
+  {
+    "id": "2",
+    "title": "Blitzkrieg Bop Reunion Session",
+    "band": "Ramones",
+    "date": "2026-07-28",
+    "time": "22:00",
+    "status": "LIVE",
+    "imageUrl": "http://localhost:5173/images/punk2.png"
+  },
+  {
+    "id": "3",
+    "title": "No Control 35th Anniversary Show",
+    "band": "Bad Religion",
+    "date": "2026-08-20",
+    "time": "21:00",
+    "status": "SCHEDULED",
+    "imageUrl": "http://localhost:5173/images/punk3.png"
+  },
+  {
+    "id": "4",
+    "title": "Dookie & Insomniac Special Session",
+    "band": "Green Day",
+    "date": "2026-09-05",
+    "time": "20:30",
+    "status": "SCHEDULED",
+    "imageUrl": "http://localhost:5173/images/punk1.png"
+  },
+  {
+    "id": "5",
+    "title": "And Out Come The Wolves World Tour",
+    "band": "Rancid",
+    "date": "2026-09-18",
+    "time": "21:00",
+    "status": "SCHEDULED",
+    "imageUrl": "http://localhost:5173/images/punk2.png"
+  },
+  {
+    "id": "6",
+    "title": "Static Age Reunion Night",
+    "band": "The Misfits",
+    "date": "2026-05-10",
+    "time": "22:30",
+    "status": "FINISHED",
+    "imageUrl": "http://localhost:5173/images/punk3.png"
+  },
+  {
+    "id": "7",
+    "title": "Mommy\"s Little Monster Revival",
+    "band": "Social Distortion",
+    "date": "2026-06-12",
+    "time": "21:00",
+    "status": "CANCELLED",
+    "imageUrl": "http://localhost:5173/images/punk1.png"
+  }
+]
