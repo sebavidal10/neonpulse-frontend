@@ -14,16 +14,28 @@ import {
 export class ConcertBoardView {
   private bannerContainer: HTMLElement | null;
   private carteleraContainer: HTMLElement | null;
+  private contadorFechasContainer: HTMLElement | null;
 
   constructor() {
     this.bannerContainer = document.getElementById('contenedor-banner');
     this.carteleraContainer = document.getElementById('contenedor-cartelera');
+    this.contadorFechasContainer = document.getElementById('contador-fechas');
   }
 
   /**
-   * Muestra esqueletos de carga visuales en ambos contenedores.
+   * Muestra esqueletos de carga visuales en los contenedores e icono de spin en el contador.
    */
   showLoading(): void {
+    if (this.contadorFechasContainer) {
+      this.contadorFechasContainer.innerHTML = `
+        <svg class="animate-spin h-3 w-3 text-red-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        <span>Cargando fechas...</span>
+      `;
+    }
+
     if (this.bannerContainer) {
       this.bannerContainer.replaceChildren(createBannerSkeletonElement());
     }
@@ -34,7 +46,7 @@ export class ConcertBoardView {
   }
 
   /**
-   * Renderiza el banner destacado y la grilla de conciertos.
+   * Renderiza el banner destacado, la grilla de conciertos y actualiza el contador dinámico de fechas.
    */
   renderConcerts(concerts: Concert[]): void {
     if (!this.carteleraContainer) {
@@ -42,6 +54,13 @@ export class ConcertBoardView {
         '[NeonPulse] Error crítico: No se encontró "#contenedor-cartelera" en el DOM.',
       );
       return;
+    }
+
+    // Actualizar el contador dinámico de fechas confirmadas
+    if (this.contadorFechasContainer) {
+      const count = concerts.length;
+      const label = count === 1 ? 'Fecha Confirmada' : 'Fechas Confirmadas';
+      this.contadorFechasContainer.innerHTML = `<span>${count} ${label}</span>`;
     }
 
     // 1. Renderizar Banner Destacado
@@ -79,6 +98,9 @@ export class ConcertBoardView {
    * Muestra la vista de estado vacío cuando no hay conciertos.
    */
   showEmpty(): void {
+    if (this.contadorFechasContainer) {
+      this.contadorFechasContainer.innerHTML = `<span>0 Fechas Confirmadas</span>`;
+    }
     if (this.bannerContainer) {
       this.bannerContainer.replaceChildren();
     }
@@ -91,6 +113,9 @@ export class ConcertBoardView {
    * Muestra la vista de estado de error global.
    */
   showError(message: string, onRetry?: () => void): void {
+    if (this.contadorFechasContainer) {
+      this.contadorFechasContainer.innerHTML = `<span>0 Fechas Confirmadas</span>`;
+    }
     if (this.bannerContainer) {
       this.bannerContainer.replaceChildren();
     }
