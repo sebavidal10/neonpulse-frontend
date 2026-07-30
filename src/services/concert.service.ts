@@ -1,12 +1,27 @@
 import { type Concert, ConcertStatus } from '../models';
+import { APP_CONFIG } from '../config/app.config';
 
 export class ConcertService {
-  private static readonly DATA_URL = './data/concerts.json';
+  private static readonly DATA_URL = APP_CONFIG.CONCERTS_DATA_URL;
 
   /**
-   * Obtiene todos los conciertos desde la fuente de datos con validación HTTP y conversión de tipos.
+   * Utilidad privada para simular latencia de red en milisegundos.
    */
-  static async getAllConcerts(): Promise<Concert[]> {
+  private static delay(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  /**
+   * Obtiene todos los conciertos desde la fuente de datos.
+   * @param delayMs Tiempo en ms para simular carga de red. Por defecto usa APP_CONFIG.SIMULATED_NETWORK_DELAY_MS.
+   */
+  static async getAllConcerts(
+    delayMs: number = APP_CONFIG.SIMULATED_NETWORK_DELAY_MS,
+  ): Promise<Concert[]> {
+    if (delayMs > 0) {
+      await this.delay(delayMs);
+    }
+
     const response = await fetch(this.DATA_URL);
 
     if (!response.ok) {
