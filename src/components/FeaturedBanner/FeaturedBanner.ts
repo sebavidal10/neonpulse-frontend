@@ -1,6 +1,7 @@
 import type { Concert } from '../../models';
+import { renderIcon } from '../../utils/icon.utils';
+import { formatDate } from '../../utils/date.utils';
 import {
-  createElement,
   Flame,
   Music,
   Calendar,
@@ -10,32 +11,19 @@ import {
   MapPin,
 } from 'lucide';
 
-function renderIcon(
-  iconDef: Parameters<typeof createElement>[0],
-  extraClass: string = '',
-): string {
-  try {
-    if (!iconDef) return '';
-    const iconEl = createElement(iconDef);
-    if (extraClass) {
-      iconEl.classList.add(...extraClass.split(' '));
-    }
-    return iconEl.outerHTML;
-  } catch {
-    return '';
-  }
-}
-
 /**
- * Genera el Banner de Evento Destacado a ancho completo con estilo Punk Rock compacto de alto contraste.
+ * Genera el Banner de Evento Destacado a ancho completo con estilo Punk Rock de alto contraste.
  */
 export function createFeaturedBannerElement(concert: Concert): HTMLElement {
   const container = document.createElement('section');
-  container.className = 'w-full mb-6 rounded-xl overflow-hidden bg-zinc-950 border border-zinc-800 shadow-xl relative group';
+  container.className =
+    'w-full mb-6 rounded-xl overflow-hidden bg-zinc-950 border border-zinc-800 shadow-xl relative group';
 
   const imageUrl = concert.imageUrl || '/images/punk1.png';
-  const title = concert.title || 'London Calling 50th Anniversary Live';
-  const band = concert.band || 'The Clash & Special Guests';
+  const title = concert.title || 'Evento Destacado';
+  const band = concert.band || 'Artista por confirmar';
+  const formattedDate = formatDate(concert.date);
+  const timeDisplay = concert.time ? `${concert.time} hrs` : 'Por confirmar';
 
   container.innerHTML = `
     <div class="relative min-h-[300px] md:min-h-[350px] flex flex-col justify-end p-5 md:p-7 overflow-hidden">
@@ -49,7 +37,7 @@ export function createFeaturedBannerElement(concert: Concert): HTMLElement {
       <div class="absolute inset-0 bg-gradient-to-t from-black via-black/75 to-transparent"></div>
       <div class="absolute inset-0 bg-gradient-to-r from-black/90 via-black/60 to-transparent"></div>
 
-      <!-- Contenido compacto sin aire perdido -->
+      <!-- Contenido compacto -->
       <div class="relative z-10 max-w-2xl flex flex-col gap-2.5">
         <div class="flex flex-wrap items-center gap-2">
           <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded text-[11px] font-black uppercase tracking-widest bg-red-700 text-white shadow">
@@ -74,11 +62,11 @@ export function createFeaturedBannerElement(concert: Concert): HTMLElement {
         <div class="flex flex-wrap items-center gap-3 text-xs text-zinc-300 font-semibold pt-1">
           <div class="flex items-center gap-1.5 bg-zinc-900/90 px-2.5 py-1 rounded border border-zinc-800">
             ${renderIcon(Calendar, 'w-3.5 h-3.5 text-zinc-400')}
-            <span>Viernes 14 de Agosto, 2026</span>
+            <span>${formattedDate}</span>
           </div>
           <div class="flex items-center gap-1.5 bg-zinc-900/90 px-2.5 py-1 rounded border border-zinc-800">
             ${renderIcon(Clock, 'w-3.5 h-3.5 text-zinc-400')}
-            <span>21:30 hrs</span>
+            <span>${timeDisplay}</span>
           </div>
           <div class="flex items-center gap-1.5 bg-zinc-900/90 px-2.5 py-1 rounded border border-zinc-800 text-zinc-200">
             ${renderIcon(MapPin, 'w-3.5 h-3.5 text-red-500')}

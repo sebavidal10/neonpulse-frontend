@@ -6,13 +6,18 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest run",
+    "coverage": "vitest run --coverage"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.3.3",
+    "@vitest/coverage-v8": "^3.0.5",
+    "jsdom": "^26.0.0",
     "tailwindcss": "^4.3.3",
     "typescript": "~6.0.2",
-    "vite": "^8.1.1"
+    "vite": "^8.1.1",
+    "vitest": "^3.0.5"
   },
   "dependencies": {
     "lucide": "^1.27.0"

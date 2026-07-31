@@ -1,7 +1,8 @@
 import type { Concert } from '../../models';
 import { ConcertStatus } from '../../models';
+import { renderIcon } from '../../utils/icon.utils';
+import { formatDate } from '../../utils/date.utils';
 import {
-  createElement,
   Music,
   Calendar,
   Clock,
@@ -13,45 +14,7 @@ import {
 } from 'lucide';
 
 /**
- * Convierte una definición de icono Lucide a una cadena SVG limpia de forma segura.
- */
-function renderIcon(
-  iconDef: Parameters<typeof createElement>[0],
-  extraClass: string = '',
-): string {
-  try {
-    if (!iconDef) return '';
-    const iconEl = createElement(iconDef);
-    if (extraClass) {
-      iconEl.classList.add(...extraClass.split(' '));
-    }
-    return iconEl.outerHTML;
-  } catch (error) {
-    console.warn('[NeonPulse] Error al renderizar icono:', error);
-    return '';
-  }
-}
-
-/**
- * Formatea una fecha a una cadena legible en español.
- */
-function formatDate(date?: Date): string {
-  if (!date || !(date instanceof Date) || isNaN(date.getTime())) {
-    return 'Fecha por confirmar';
-  }
-  try {
-    return date.toLocaleDateString('es-ES', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-    });
-  } catch {
-    return 'Fecha por confirmar';
-  }
-}
-
-/**
- * Obtiene la configuración del badge y botón según el estado del concierto con botones rockeros de alto contraste.
+ * Obtiene la configuración del badge y botón según el estado del concierto.
  */
 function getStatusConfig(status?: ConcertStatus) {
   switch (status) {
@@ -104,7 +67,7 @@ function getStatusConfig(status?: ConcertStatus) {
 }
 
 /**
- * Genera el HTML declarativo y seguro de la tarjeta del concierto con diseño compacto Punk Rock y botones de alto contraste.
+ * Genera el HTML declarativo y seguro de la tarjeta del concierto.
  */
 export function generateConcertCardHtml(concert: Concert): string {
   if (!concert) {
@@ -143,7 +106,7 @@ export function generateConcertCardHtml(concert: Concert): string {
         </span>
       </div>
 
-      <!-- Cuerpo de la Tarjeta Compacto sin aire perdido -->
+      <!-- Cuerpo de la Tarjeta -->
       <div class="p-4 flex flex-col justify-between flex-grow gap-3">
         <header class="flex flex-col gap-1">
           <h3 class="text-base md:text-lg font-black text-white uppercase tracking-tight leading-snug group-hover:text-red-500 transition-colors duration-150 line-clamp-2">
@@ -183,7 +146,6 @@ export function generateConcertCardHtml(concert: Concert): string {
 
 /**
  * Crea e instancia un nodo HTMLElement seguro para la tarjeta del concierto.
- * Retorna un fallback UI elegante si ocurre cualquier falla durante el renderizado.
  */
 export function createConcertCardElement(concert: Concert): HTMLElement {
   try {
@@ -197,12 +159,14 @@ export function createConcertCardElement(concert: Concert): HTMLElement {
 
     return element;
   } catch (error) {
-    console.error(`[NeonPulse] Error al crear la tarjeta del concierto (${concert?.id || 'desconocido'}):`, error);
+    let concertId = 'desconocido';
+    try { concertId = String(concert?.id ?? 'desconocido'); } catch { /* id getter también lanzó */ }
+    console.error(`[NeonPulse] Error al crear la tarjeta del concierto (${concertId}):`, error);
 
-    // Componente Fallback UI de error individual
     const fallbackArticle = document.createElement('article');
-    fallbackArticle.className = 'h-full bg-zinc-950 border border-red-600/40 rounded-xl p-4 text-center text-red-400 flex flex-col justify-center items-center gap-2';
-    
+    fallbackArticle.className =
+      'h-full bg-zinc-950 border border-red-600/40 rounded-xl p-4 text-center text-red-400 flex flex-col justify-center items-center gap-2';
+
     const icon = renderIcon(AlertTriangle, 'w-5 h-5 text-red-400');
     fallbackArticle.innerHTML = `
       ${icon}
