@@ -27,6 +27,10 @@ describe('ConcertService', () => {
       title: 'Underground Jam',
       status: 'INVALID_STATUS',
     },
+    {
+      id: '4',
+      status: 'SCHEDULED',
+    },
   ];
 
   beforeEach(() => {
@@ -45,7 +49,7 @@ describe('ConcertService', () => {
 
     const concerts = await ConcertService.getAllConcerts(0);
 
-    expect(concerts).toHaveLength(3);
+    expect(concerts).toHaveLength(4);
     expect(concerts[0].id).toBe('1');
     expect(concerts[0].title).toBe('Punk Festival 2026');
     expect(concerts[0].band).toBe('The Offspring');
@@ -59,6 +63,9 @@ describe('ConcertService', () => {
     expect(concerts[2].time).toBeUndefined();
     expect(concerts[2].status).toBe(ConcertStatus.SCHEDULED);
     expect(concerts[2].imageUrl).toBeUndefined();
+
+    expect(concerts[3].title).toBe('Evento sin título');
+    expect(concerts[3].band).toBe('Artista desconocido');
   });
 
   it('debe aplicar retardo simulado cuando delayMs > 0', async () => {

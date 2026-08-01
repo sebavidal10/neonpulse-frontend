@@ -95,4 +95,50 @@ describe('BookingForm Component', () => {
     expect(el.innerHTML).toContain('¡Reserva Confirmada!');
     expect(el.innerHTML).toContain('3 entrada(s)');
   });
+
+  it('debe mostrar error si la cantidad de entradas no está definida o no es un número', () => {
+    const el = createBookingFormElement();
+    const form = el.querySelector('#form-reserva') as HTMLFormElement;
+    const emailInput = el.querySelector('#email') as HTMLInputElement;
+    const cantidadInput = el.querySelector('#cantidad') as HTMLInputElement;
+    const errorBlock = el.querySelector('#bloque-error') as HTMLElement;
+
+    emailInput.value = 'fan@punkrock.cl';
+    cantidadInput.value = ''; // Vacío (NaN al parsear)
+    form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+
+    expect(errorBlock.classList.contains('hidden')).toBe(false);
+    expect(errorBlock.textContent).toContain('Por favor, ingresa la cantidad de entradas.');
+  });
+
+  it('debe reiniciar el formulario al presionar Realizar Otra Reserva', () => {
+    const el = createBookingFormElement(mockConcert);
+    const form = el.querySelector('#form-reserva') as HTMLFormElement;
+    const emailInput = el.querySelector('#email') as HTMLInputElement;
+    const cantidadInput = el.querySelector('#cantidad') as HTMLInputElement;
+
+    emailInput.value = 'fan@punkrock.cl';
+    cantidadInput.value = '2';
+    form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+
+    expect(el.innerHTML).toContain('¡Reserva Confirmada!');
+
+    const btnNuevaReserva = el.querySelector('#btn-nueva-reserva') as HTMLButtonElement;
+    expect(btnNuevaReserva).not.toBeNull();
+    
+    // Simular click
+    btnNuevaReserva.dispatchEvent(new Event('click', { bubbles: true }));
+    
+    // El elemento original fue reemplazado, pero como se reemplaza a sí mismo en el DOM 
+    // y en jsdom, el elemento actual debería re-instanciarse o verificar que el click dispara
+    // el reemplazo en el DOM si el elemento estuviera adjunto al body.
+    // Vamos a adjuntarlo al body para verificar el replaceWith.
+    document.body.appendChild(el);
+    btnNuevaReserva.click();
+    
+    const formularioReinstanciado = document.body.querySelector('#form-reserva');
+    expect(formularioReinstanciado).not.toBeNull();
+    document.body.removeChild(document.body.firstChild!);
+  });
 });
+
