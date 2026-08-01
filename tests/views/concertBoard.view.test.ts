@@ -39,6 +39,7 @@ describe('ConcertBoardView', () => {
       <div id="contenedor-banner"></div>
       <span id="contador-fechas"></span>
       <div id="contenedor-cartelera"></div>
+      <div id="contenedor-reserva"></div>
     `;
 
     bannerContainer = document.getElementById('contenedor-banner')!;
@@ -146,5 +147,14 @@ describe('ConcertBoardView', () => {
       view.showEmpty();
       view.showError('Error test');
     }).not.toThrow();
+  });
+
+  it('debe renderizar el formulario de reserva al ejecutar renderConcerts', () => {
+    const view = new ConcertBoardView();
+    view.renderConcerts(mockConcerts);
+
+    const bookingContainer = document.getElementById('contenedor-reserva');
+    expect(bookingContainer?.children.length).toBe(1);
+    expect(bookingContainer?.innerHTML).toContain('Reserva de Entradas');
   });
 });
