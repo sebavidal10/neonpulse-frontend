@@ -24,6 +24,7 @@ export class ConcertService {
 
     const response = await fetch(this.DATA_URL);
 
+    console.log('status => ', response);
     if (!response.ok) {
       throw new Error(
         `Error HTTP al obtener los conciertos: status ${response.status} (${response.statusText})`,
@@ -31,24 +32,30 @@ export class ConcertService {
     }
 
     const rawData = await response.json();
-
+    console.log('rawData => ', rawData);
     if (!Array.isArray(rawData)) {
-      throw new Error('La respuesta de conciertos no tiene un formato válido (se esperaba un array).');
+      throw new Error(
+        'La respuesta de conciertos no tiene un formato válido (se esperaba un array).',
+      );
     }
 
     // Transformación y parseo seguro de datos (string date -> Date instance)
-    return rawData.map((item: any): Concert => ({
-      id: String(item.id),
-      title: String(item.title || 'Evento sin título'),
-      band: String(item.band || 'Artista desconocido'),
-      date: item.date ? new Date(item.date) : new Date(),
-      time: item.time ? String(item.time) : undefined,
-      status: (Object.values(ConcertStatus).includes(item.status as ConcertStatus)
-        ? item.status
-        : ConcertStatus.SCHEDULED) as ConcertStatus,
-      imageUrl: item.imageUrl ? String(item.imageUrl) : undefined,
-      isFeatured: Boolean(item.isFeatured),
-    }));
+    return rawData.map(
+      (item: any): Concert => ({
+        id: String(item.id),
+        title: String(item.title2 || 'Evento sin título'),
+        band: String(item.band || 'Artista desconocido'),
+        date: item.date ? new Date(item.date) : new Date(),
+        time: item.time ? String(item.time) : undefined,
+        status: (Object.values(ConcertStatus).includes(
+          item.status as ConcertStatus,
+        )
+          ? item.status
+          : ConcertStatus.SCHEDULED) as ConcertStatus,
+        imageUrl: item.imageUrl ? String(item.imageUrl) : undefined,
+        isFeatured: Boolean(item.isFeatured),
+      }),
+    );
   }
 
   /**

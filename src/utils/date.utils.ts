@@ -15,3 +15,17 @@ export function formatDate(date?: Date): string {
     return 'Fecha por confirmar';
   }
 }
+
+export function getTime(date?: Date): string {
+  if (!date || !(date instanceof Date) || isNaN(date.getTime())) {
+    return 'Hora por confirmar';
+  }
+  try {
+    return date.toLocaleTimeString('es-ES', {
+      hour: 'numeric',
+      minute: 'numeric',
+    });
+  } catch {
+    return 'Hora por confirmar';
+  }
+}

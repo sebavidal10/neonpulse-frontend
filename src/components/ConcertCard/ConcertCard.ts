@@ -1,7 +1,7 @@
 import type { Concert } from '../../models';
 import { ConcertStatus } from '../../models';
 import { renderIcon } from '../../utils/icon.utils';
-import { formatDate } from '../../utils/date.utils';
+import { formatDate, getTime } from '../../utils/date.utils';
 import {
   Music,
   Calendar,
@@ -21,46 +21,56 @@ function getStatusConfig(status?: ConcertStatus) {
     case ConcertStatus.LIVE:
       return {
         label: 'EN VIVO ⚡',
-        badgeClass: 'bg-red-950/90 text-red-400 border border-red-700 font-black tracking-widest animate-pulse shadow',
+        badgeClass:
+          'bg-red-950/90 text-red-400 border border-red-700 font-black tracking-widest animate-pulse shadow',
         buttonText: 'Ver Transmisión',
         buttonDisabled: false,
-        buttonClass: 'bg-red-600 hover:bg-red-500 text-white font-black uppercase tracking-wider border border-red-500 shadow-[0_0_12px_rgba(220,38,38,0.3)] cursor-pointer',
+        buttonClass:
+          'bg-red-600 hover:bg-red-500 text-white font-black uppercase tracking-wider border border-red-500 shadow-[0_0_12px_rgba(220,38,38,0.3)] cursor-pointer',
         icon: Radio,
       };
     case ConcertStatus.SCHEDULED:
       return {
         label: 'Programado',
-        badgeClass: 'bg-zinc-900/90 text-zinc-200 border border-zinc-700 font-extrabold tracking-wider shadow',
+        badgeClass:
+          'bg-zinc-900/90 text-zinc-200 border border-zinc-700 font-extrabold tracking-wider shadow',
         buttonText: 'Comprar Entradas',
         buttonDisabled: false,
-        buttonClass: 'bg-zinc-100 hover:bg-white text-zinc-950 font-black uppercase tracking-wider border border-zinc-200 shadow-[0_0_12px_rgba(255,255,255,0.12)] cursor-pointer',
+        buttonClass:
+          'bg-zinc-100 hover:bg-white text-zinc-950 font-black uppercase tracking-wider border border-zinc-200 shadow-[0_0_12px_rgba(255,255,255,0.12)] cursor-pointer',
         icon: Ticket,
       };
     case ConcertStatus.FINISHED:
       return {
         label: 'Finalizado',
-        badgeClass: 'bg-zinc-900/90 text-zinc-400 border border-zinc-800 font-bold uppercase shadow',
+        badgeClass:
+          'bg-zinc-900/90 text-zinc-400 border border-zinc-800 font-bold uppercase shadow',
         buttonText: 'Show Finalizado',
         buttonDisabled: true,
-        buttonClass: 'bg-zinc-900 text-zinc-600 font-bold uppercase tracking-wider border border-zinc-800 cursor-not-allowed',
+        buttonClass:
+          'bg-zinc-900 text-zinc-600 font-bold uppercase tracking-wider border border-zinc-800 cursor-not-allowed',
         icon: CheckCircle2,
       };
     case ConcertStatus.CANCELLED:
       return {
         label: 'Cancelado',
-        badgeClass: 'bg-zinc-900/90 text-red-500 border border-red-900/80 font-bold uppercase line-through shadow',
+        badgeClass:
+          'bg-zinc-900/90 text-red-500 border border-red-900/80 font-bold uppercase line-through shadow',
         buttonText: 'Show Cancelado',
         buttonDisabled: true,
-        buttonClass: 'bg-zinc-900 text-zinc-600 font-bold uppercase tracking-wider border border-zinc-800 cursor-not-allowed',
+        buttonClass:
+          'bg-zinc-900 text-zinc-600 font-bold uppercase tracking-wider border border-zinc-800 cursor-not-allowed',
         icon: XCircle,
       };
     default:
       return {
         label: status || 'Por confirmar',
-        badgeClass: 'bg-zinc-900/90 text-zinc-200 border border-zinc-700 font-extrabold tracking-wider shadow',
+        badgeClass:
+          'bg-zinc-900/90 text-zinc-200 border border-zinc-700 font-extrabold tracking-wider shadow',
         buttonText: 'Ver Detalles',
         buttonDisabled: false,
-        buttonClass: 'bg-zinc-100 hover:bg-white text-zinc-950 font-black uppercase tracking-wider border border-zinc-200 shadow-[0_0_12px_rgba(255,255,255,0.12)] cursor-pointer',
+        buttonClass:
+          'bg-zinc-100 hover:bg-white text-zinc-950 font-black uppercase tracking-wider border border-zinc-200 shadow-[0_0_12px_rgba(255,255,255,0.12)] cursor-pointer',
         icon: Ticket,
       };
   }
@@ -80,7 +90,8 @@ export function generateConcertCardHtml(concert: Concert): string {
 
   const config = getStatusConfig(concert.status);
   const formattedDate = formatDate(concert.date);
-  const timeDisplay = concert.time ? `${concert.time} hrs` : 'Por confirmar';
+  // const timeDisplay = concert.time ? `${concert.time} hrs` : 'Por confirmar';
+  const timeDisplay = getTime(concert.date);
   const title = concert.title || 'Concierto sin título';
   const band = concert.band || 'Artista por confirmar';
   const id = concert.id || 'desconocido';
@@ -160,8 +171,15 @@ export function createConcertCardElement(concert: Concert): HTMLElement {
     return element;
   } catch (error) {
     let concertId = 'desconocido';
-    try { concertId = String(concert?.id ?? 'desconocido'); } catch { /* id getter también lanzó */ }
-    console.error(`[NeonPulse] Error al crear la tarjeta del concierto (${concertId}):`, error);
+    try {
+      concertId = String(concert?.id ?? 'desconocido');
+    } catch {
+      /* id getter también lanzó */
+    }
+    console.error(
+      `[NeonPulse] Error al crear la tarjeta del concierto (${concertId}):`,
+      error,
+    );
 
     const fallbackArticle = document.createElement('article');
     fallbackArticle.className =
