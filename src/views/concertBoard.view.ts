@@ -124,44 +124,8 @@ export class ConcertBoardView {
 
     this.carteleraContainer.replaceChildren(fragment);
 
-    // 3. Renderizar Formulario de Reserva
+    // 3. Renderizar Formulario de Reserva estándar
     this.renderBookingForm();
-
-    // 4. Configurar eventos de interacción para seleccionar concierto
-    this.setupBookingListeners(concerts, featuredConcert);
-  }
-
-  /**
-   * Configura los escuchadores de evento click para seleccionar un concierto y hacer scroll hacia la reserva.
-   */
-  private setupBookingListeners(concerts: Concert[], featuredConcert: Concert | null): void {
-    const handleTicketClick = (event: Event) => {
-      const target = event.target as HTMLElement;
-      const button = target.closest('button');
-      if (!button || button.disabled) return;
-
-      const card = target.closest('[data-id]') as HTMLElement | null;
-      const concertId = card?.getAttribute('data-id');
-
-      let selectedConcert: Concert | undefined;
-      if (concertId) {
-        selectedConcert = concerts.find((c) => c.id === concertId);
-      } else if (this.bannerContainer?.contains(target)) {
-        selectedConcert = featuredConcert || undefined;
-      }
-
-      if (selectedConcert) {
-        this.renderBookingForm(selectedConcert);
-        this.bookingContainer?.scrollIntoView({ behavior: 'smooth' });
-      }
-    };
-
-    if (this.carteleraContainer) {
-      this.carteleraContainer.addEventListener('click', handleTicketClick);
-    }
-    if (this.bannerContainer) {
-      this.bannerContainer.addEventListener('click', handleTicketClick);
-    }
   }
 
   /**

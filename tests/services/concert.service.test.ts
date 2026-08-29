@@ -31,6 +31,11 @@ describe('ConcertService', () => {
       id: '4',
       status: 'SCHEDULED',
     },
+    {
+      id: '5',
+      band: 'The Clash',
+      status: 'SCHEDULED',
+    },
   ];
 
   beforeEach(() => {
@@ -49,7 +54,7 @@ describe('ConcertService', () => {
 
     const concerts = await ConcertService.getAllConcerts(0);
 
-    expect(concerts).toHaveLength(4);
+    expect(concerts).toHaveLength(5);
     expect(concerts[0].id).toBe('1');
     expect(concerts[0].title).toBe('Punk Festival 2026');
     expect(concerts[0].band).toBe('The Offspring');
@@ -66,6 +71,9 @@ describe('ConcertService', () => {
 
     expect(concerts[3].title).toBe('Evento sin título');
     expect(concerts[3].band).toBe('Artista desconocido');
+
+    expect(concerts[4].title).toBe('The Clash');
+    expect(concerts[4].band).toBe('The Clash');
   });
 
   it('debe aplicar retardo simulado cuando delayMs > 0', async () => {

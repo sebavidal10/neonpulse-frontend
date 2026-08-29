@@ -1,7 +1,7 @@
 import type { Concert } from '../../models';
 import { ConcertStatus } from '../../models';
 import { renderIcon } from '../../utils/icon.utils';
-import { formatDate, getTime } from '../../utils/date.utils';
+import { formatDate } from '../../utils/date.utils';
 import {
   Music,
   Calendar,
@@ -90,8 +90,7 @@ export function generateConcertCardHtml(concert: Concert): string {
 
   const config = getStatusConfig(concert.status);
   const formattedDate = formatDate(concert.date);
-  // const timeDisplay = concert.time ? `${concert.time} hrs` : 'Por confirmar';
-  const timeDisplay = getTime(concert.date);
+  const timeDisplay = concert.time ? `${concert.time} hrs` : 'Por confirmar';
   const title = concert.title || 'Concierto sin título';
   const band = concert.band || 'Artista por confirmar';
   const id = concert.id || 'desconocido';
@@ -172,7 +171,9 @@ export function createConcertCardElement(concert: Concert): HTMLElement {
   } catch (error) {
     let concertId = 'desconocido';
     try {
-      concertId = String(concert?.id ?? 'desconocido');
+      if (concert?.id) {
+        concertId = String(concert.id);
+      }
     } catch {
       /* id getter también lanzó */
     }

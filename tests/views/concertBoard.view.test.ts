@@ -197,60 +197,11 @@ describe('ConcertBoardView', () => {
     consoleSpy.mockRestore();
   });
 
-  it('debe actualizar el formulario de reserva con el concierto correcto cuando se hace click en Comprar Entradas en una tarjeta', () => {
+  it('debe retornar de forma segura en renderBookingForm si bookingContainer es nulo', () => {
+    document.body.innerHTML = '';
     const view = new ConcertBoardView();
-    view.renderConcerts(mockConcerts);
-
-    const bookingContainer = document.getElementById('contenedor-reserva')!;
-    
-    // Al principio, el formulario no tiene concierto seleccionado (badge de SELECCIONADO no está)
-    expect(bookingContainer.innerHTML).not.toContain('SELECCIONADO');
-
-    // Clickear el botón de comprar entradas en la tarjeta con data-id="2"
-    const card2 = carteleraContainer.querySelector('[data-id="2"]') as HTMLElement;
-    const btn = card2.querySelector('button') as HTMLButtonElement;
-    
-    // Mockear scrollIntoView para evitar error en jsdom
-    const scrollSpy = vi.fn();
-    window.HTMLElement.prototype.scrollIntoView = scrollSpy;
-
-    btn.click();
-
-    // Ahora el formulario debe tener la información del concierto seleccionado
-    expect(bookingContainer.innerHTML).toContain('SELECCIONADO');
-    expect(bookingContainer.innerHTML).toContain('Grid Concert 1');
-    expect(scrollSpy).toHaveBeenCalled();
-  });
-
-  it('debe actualizar el formulario de reserva con el concierto correcto cuando se hace click en Ver Transmisión en el banner destacado', () => {
-    const view = new ConcertBoardView();
-    view.renderConcerts(mockConcerts);
-
-    const bookingContainer = document.getElementById('contenedor-reserva')!;
-    expect(bookingContainer.innerHTML).not.toContain('SELECCIONADO');
-
-    // Mockear scrollIntoView
-    const scrollSpy = vi.fn();
-    window.HTMLElement.prototype.scrollIntoView = scrollSpy;
-
-    // Clickear el botón en el banner
-    const bannerBtn = bannerContainer.querySelector('button') as HTMLButtonElement;
-    bannerBtn.click();
-
-    expect(bookingContainer.innerHTML).toContain('SELECCIONADO');
-    expect(bookingContainer.innerHTML).toContain('Featured Concert');
-  });
-
-  it('no debe hacer nada en setupBookingListeners si el botón clickeado está deshabilitado o no es un botón de reserva', () => {
-    const view = new ConcertBoardView();
-    view.renderConcerts(mockConcerts);
-
-    const bookingContainer = document.getElementById('contenedor-reserva')!;
-    expect(bookingContainer.innerHTML).not.toContain('SELECCIONADO');
-
-    // Clickear en cualquier otra parte de la cartelera
-    carteleraContainer.click();
-    expect(bookingContainer.innerHTML).not.toContain('SELECCIONADO');
+    expect(() => view.renderBookingForm(mockConcerts[0])).not.toThrow();
   });
 });
+
 

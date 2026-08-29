@@ -154,13 +154,12 @@ export function createBookingFormElement(
   const errorBlock = sectionElement.querySelector<HTMLElement>('#bloque-error');
 
   const showError = (msg: string) => {
-    if (!errorBlock) return;
     const warningIcon = renderIcon(
       AlertCircle,
       'w-4 h-4 shrink-0 text-red-400',
     );
-    errorBlock.innerHTML = `${warningIcon}<span>${msg}</span>`;
-    errorBlock.classList.remove('hidden');
+    errorBlock!.innerHTML = `${warningIcon}<span>${msg}</span>`;
+    errorBlock!.classList.remove('hidden');
   };
 
   if (form && emailInput && cantidadInput && errorBlock) {

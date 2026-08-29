@@ -24,7 +24,6 @@ export class ConcertService {
 
     const response = await fetch(this.DATA_URL);
 
-    console.log('status => ', response);
     if (!response.ok) {
       throw new Error(
         `Error HTTP al obtener los conciertos: status ${response.status} (${response.statusText})`,
@@ -32,7 +31,6 @@ export class ConcertService {
     }
 
     const rawData = await response.json();
-    console.log('rawData => ', rawData);
     if (!Array.isArray(rawData)) {
       throw new Error(
         'La respuesta de conciertos no tiene un formato válido (se esperaba un array).',
@@ -40,22 +38,39 @@ export class ConcertService {
     }
 
     // Transformación y parseo seguro de datos (string date -> Date instance)
-    return rawData.map(
-      (item: any): Concert => ({
+    return rawData.map((item: any): Concert => {
+      let resolvedStatus = ConcertStatus.SCHEDULED;
+      if (item.status === 'OPEN') {
+        resolvedStatus = ConcertStatus.SCHEDULED;
+      } else if (item.status === 'CLOSED') {
+        resolvedStatus = ConcertStatus.FINISHED;
+      } else if (
+        Object.values(ConcertStatus).includes(item.status as ConcertStatus)
+      ) {
+        resolvedStatus = item.status as ConcertStatus;
+      }
+
+      const band = item.band ? String(item.band) : 'Artista desconocido';
+
+      const title = item.title
+        ? String(item.title)
+        : item.band
+          ? (item.cityName
+            ? `${item.band} - en Vivo ${item.cityName}`
+            : String(item.band))
+          : 'Evento sin título';
+
+      return {
         id: String(item.id),
-        title: String(item.title2 || 'Evento sin título'),
-        band: String(item.band || 'Artista desconocido'),
+        title,
+        band,
         date: item.date ? new Date(item.date) : new Date(),
         time: item.time ? String(item.time) : undefined,
-        status: (Object.values(ConcertStatus).includes(
-          item.status as ConcertStatus,
-        )
-          ? item.status
-          : ConcertStatus.SCHEDULED) as ConcertStatus,
+        status: resolvedStatus,
         imageUrl: item.imageUrl ? String(item.imageUrl) : undefined,
         isFeatured: Boolean(item.isFeatured),
-      }),
-    );
+      };
+    });
   }
 
   /**

@@ -116,6 +116,12 @@ describe('ConcertCard Component', () => {
     const fallbackEl = createConcertCardElement(baseConcert);
     expect(fallbackEl).toBeInstanceOf(HTMLElement);
     expect(fallbackEl.innerHTML).toContain('No se pudo cargar esta tocata.');
+
+    // Fallback con concierto sin ID
+    const fallbackElNoId = createConcertCardElement({} as Concert);
+    expect(fallbackElNoId).toBeInstanceOf(HTMLElement);
+    expect(fallbackElNoId.innerHTML).toContain('No se pudo cargar esta tocata.');
+
     createElementSpy.mockRestore();
   });
 });
