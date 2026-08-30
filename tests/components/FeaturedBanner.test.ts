@@ -1,42 +1,48 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { createFeaturedBannerElement } from '../../src/components/FeaturedBanner/FeaturedBanner';
 import { ConcertStatus, type Concert } from '../../src/models';
 
 describe('FeaturedBanner Component', () => {
-  const featuredConcert: Concert = {
-    id: '1',
-    title: 'London Calling Festival',
-    band: 'The Clash',
-    date: new Date(2026, 7, 14),
-    time: '21:30',
+  const mockFeaturedConcert: Concert = {
+    id: '99',
+    title: 'The Exploited - Live in Santiago',
+    band: 'The Exploited',
+    date: new Date(2026, 11, 31),
+    time: '23:00',
     status: ConcertStatus.LIVE,
-    imageUrl: '/images/punk1.png',
+    imageUrl: '/images/punk2.png',
+    ticketPrice: 35000,
     isFeatured: true,
   };
 
-  it('debe crear un elemento de banner destacado completo', () => {
-    const el = createFeaturedBannerElement(featuredConcert);
-    expect(el).toBeInstanceOf(HTMLElement);
+  it('debe renderizar la información completa del concierto destacado', () => {
+    const el = createFeaturedBannerElement(mockFeaturedConcert);
     expect(el.tagName).toBe('SECTION');
-    expect(el.innerHTML).toContain('London Calling Festival');
-    expect(el.innerHTML).toContain('The Clash');
-    expect(el.innerHTML).toContain('21:30 hrs');
-    expect(el.innerHTML).toContain('HEADLINER PUNK');
-    expect(el.innerHTML).toContain('EN VIVO AHORA');
+    expect(el.innerHTML).toContain('The Exploited - Live in Santiago');
+    expect(el.innerHTML).toContain('The Exploited');
+    expect(el.innerHTML).toContain('HEADLINER EVENT');
+    expect(el.innerHTML).toContain('$35,000');
   });
 
-  it('debe utilizar fallbacks cuando faltan propiedades en el concierto', () => {
-    const minimalConcert: Concert = {
-      id: '2',
-      title: '',
-      band: '',
-      date: new Date('invalid'),
-      status: ConcertStatus.SCHEDULED,
-    };
-    const el = createFeaturedBannerElement(minimalConcert);
-    expect(el.innerHTML).toContain('Evento Destacado');
-    expect(el.innerHTML).toContain('Artista por confirmar');
-    expect(el.innerHTML).toContain('Por confirmar');
-    expect(el.innerHTML).toContain('/images/punk1.png');
+  it('debe disparar onSelectConcert al hacer click en el botón de reservar', () => {
+    const onSelect = vi.fn();
+    const el = createFeaturedBannerElement(mockFeaturedConcert, onSelect);
+    const button = el.querySelector<HTMLButtonElement>('#btn-featured-book');
+
+    expect(button).not.toBeNull();
+    button?.click();
+
+    expect(onSelect).toHaveBeenCalledWith(mockFeaturedConcert);
+  });
+
+  it('debe disparar onOpenDetail al hacer click en el botón de ver detalles', () => {
+    const onOpenDetail = vi.fn();
+    const el = createFeaturedBannerElement(mockFeaturedConcert, undefined, onOpenDetail);
+    const detailBtn = el.querySelector<HTMLButtonElement>('#btn-featured-detail');
+
+    expect(detailBtn).not.toBeNull();
+    detailBtn?.click();
+
+    expect(onOpenDetail).toHaveBeenCalledWith(mockFeaturedConcert);
   });
 });

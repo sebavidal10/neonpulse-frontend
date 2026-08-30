@@ -13,23 +13,26 @@ describe('ConcertService', () => {
       status: 'LIVE',
       imageUrl: '/images/punk1.png',
       isFeatured: true,
+      ticketPrice: 45000,
+      availableTickets: 20,
     },
     {
       id: '2',
       title: 'Rock Night',
       band: 'Green Day',
       date: '2026-09-10',
-      status: 'SCHEDULED',
+      status: 'OPEN',
+      availableTickets: 0,
       isFeatured: false,
     },
     {
       id: '3',
       title: 'Underground Jam',
-      status: 'INVALID_STATUS',
+      status: 'SOLD_OUT',
     },
     {
       id: '4',
-      status: 'SCHEDULED',
+      status: 'CLOSED',
     },
     {
       id: '5',
@@ -62,17 +65,14 @@ describe('ConcertService', () => {
     expect(concerts[0].status).toBe(ConcertStatus.LIVE);
     expect(concerts[0].isFeatured).toBe(true);
 
-    // Mapeo de valores por defecto cuando faltan propiedades
-    expect(concerts[2].title).toBe('Underground Jam');
-    expect(concerts[2].band).toBe('Artista desconocido');
-    expect(concerts[2].time).toBeUndefined();
-    expect(concerts[2].status).toBe(ConcertStatus.SCHEDULED);
-    expect(concerts[2].imageUrl).toBeUndefined();
+    expect(concerts[1].status).toBe(ConcertStatus.SOLD_OUT);
+    expect(concerts[2].status).toBe(ConcertStatus.SOLD_OUT);
+    expect(concerts[3].status).toBe(ConcertStatus.FINISHED);
 
-    expect(concerts[3].title).toBe('Evento sin título');
-    expect(concerts[3].band).toBe('Artista desconocido');
+    expect(concerts[3].title).toBe('Unknown Artist - Underground Live');
+    expect(concerts[3].band).toBe('Unknown Artist');
 
-    expect(concerts[4].title).toBe('The Clash');
+    expect(concerts[4].title).toBe('The Clash - Underground Live');
     expect(concerts[4].band).toBe('The Clash');
   });
 
@@ -89,7 +89,7 @@ describe('ConcertService', () => {
     expect(elapsedTime).toBeGreaterThanOrEqual(5);
   });
 
-  it('debe lanzar error cuando response.ok es false', async () => {
+  it('debe lanzar error cuando response.ok es false en getAllConcerts', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
       ok: false,
       status: 404,
@@ -97,7 +97,7 @@ describe('ConcertService', () => {
     }));
 
     await expect(ConcertService.getAllConcerts(0)).rejects.toThrow(
-      'Error HTTP al obtener los conciertos: status 404 (Not Found)',
+      'HTTP error while fetching concerts: status 404 (Not Found)',
     );
   });
 
@@ -108,8 +108,90 @@ describe('ConcertService', () => {
     }));
 
     await expect(ConcertService.getAllConcerts(0)).rejects.toThrow(
-      'La respuesta de conciertos no tiene un formato válido (se esperaba un array).',
+      'Invalid concert response format: expected an array.',
     );
+  });
+
+  it('debe obtener ciudades desde el endpoint o retornar ciudades por defecto ante fallos', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => [{ id: 1, code: 'SCL', name: 'Santiago' }],
+    }));
+
+    const cities = await ConcertService.getCities();
+    expect(cities).toHaveLength(1);
+    expect(cities[0].code).toBe('SCL');
+
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: false }));
+    const fallbackCities = await ConcertService.getCities();
+    expect(fallbackCities.length).toBeGreaterThan(0);
+  });
+
+  it('debe crear un concierto exitosamente o lanzar error ante respuesta no-ok', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ id: 10, band: 'Blink-182' }),
+    }));
+
+    const created = await ConcertService.createConcert({
+      band: 'Blink-182',
+      code: 'PUNK-002',
+      cityId: 1,
+      date: '2026-11-28',
+      ticketPrice: 42000,
+      totalTickets: 150,
+    }, 'mock-token');
+
+    expect(created.id).toBe(10);
+
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+      ok: false,
+      status: 400,
+      text: async () => 'Invalid payload',
+    }));
+
+    await expect(ConcertService.createConcert({
+      band: 'Invalid',
+      code: 'PUNK-INV',
+      cityId: 1,
+      date: '2026-11-28',
+      ticketPrice: 42000,
+      totalTickets: 150,
+    })).rejects.toThrow('Failed to create concert: Invalid payload');
+  });
+
+  it('debe actualizar y eliminar conciertos correctamente', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => ({ id: 1, band: 'The Offspring Updated' }),
+    }));
+
+    const updated = await ConcertService.updateConcert(1, {
+      band: 'The Offspring Updated',
+      code: 'PUNK-001',
+      cityId: 1,
+      date: '2026-11-20',
+      ticketPrice: 38000,
+      totalTickets: 120,
+      status: 'OPEN',
+    });
+
+    expect(updated.band).toBe('The Offspring Updated');
+
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+      ok: true,
+      status: 204,
+    }));
+
+    await expect(ConcertService.deleteConcert(1)).resolves.not.toThrow();
+
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+      ok: false,
+      status: 500,
+    }));
+
+    await expect(ConcertService.deleteConcert(1)).rejects.toThrow('Failed to delete concert: status 500');
   });
 
   it('debe obtener el concierto destacado correctamente', () => {
@@ -145,6 +227,43 @@ describe('ConcertService', () => {
     const grid = ConcertService.getGridConcerts(list);
     expect(grid).toHaveLength(2);
     expect(grid.map((c) => c.id)).toEqual(['2', '3']);
+  });
+
+  it('debe obtener lugares por ciudad y crear nuevos lugares', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValueOnce({
+      ok: true,
+      json: async () => [{ id: 10, name: 'Teatro Cariola', cityId: 1 }],
+    }));
+
+    const venues = await ConcertService.getVenuesByCity(1);
+    expect(venues).toHaveLength(1);
+    expect(venues[0].name).toBe('Teatro Cariola');
+
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValueOnce({ ok: false }));
+    const emptyVenues = await ConcertService.getVenuesByCity(999);
+    expect(emptyVenues).toEqual([]);
+
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ id: 15, name: 'Blondie', cityId: 1 }),
+    }));
+
+    const createdVenue = await ConcertService.createVenue({
+      cityId: 1,
+      name: 'Blondie',
+    });
+    expect(createdVenue.id).toBe(15);
+  });
+
+  it('debe subir una imagen de portada y retornar la URL', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ imageUrl: 'data:image/jpeg;base64,mocked' }),
+    }));
+
+    const file = new File(['img'], 'poster.jpg', { type: 'image/jpeg' });
+    const url = await ConcertService.uploadCoverImage(file);
+    expect(url).toBe('data:image/jpeg;base64,mocked');
   });
 
   it('debe retornar la lista completa en getGridConcerts si la longitud es <= 1', () => {

@@ -3,7 +3,6 @@ import { ConcertBoardView } from '../../src/views/concertBoard.view';
 import { ConcertStatus, type Concert } from '../../src/models';
 import * as FeaturedBannerModule from '../../src/components/FeaturedBanner/FeaturedBanner';
 import * as ConcertCardModule from '../../src/components/ConcertCard/ConcertCard';
-import * as BookingFormModule from '../../src/components/BookingForm/BookingForm';
 
 describe('ConcertBoardView', () => {
   let bannerContainer: HTMLElement;
@@ -18,6 +17,7 @@ describe('ConcertBoardView', () => {
       date: new Date(),
       status: ConcertStatus.LIVE,
       isFeatured: true,
+      ticketPrice: 25000,
     },
     {
       id: '2',
@@ -25,6 +25,7 @@ describe('ConcertBoardView', () => {
       band: 'Band B',
       date: new Date(),
       status: ConcertStatus.SCHEDULED,
+      ticketPrice: 25000,
     },
     {
       id: '3',
@@ -32,18 +33,18 @@ describe('ConcertBoardView', () => {
       band: 'Band C',
       date: new Date(),
       status: ConcertStatus.SCHEDULED,
+      ticketPrice: 25000,
     },
   ];
 
   beforeEach(() => {
     document.body.innerHTML = `
-      <div id="contenedor-banner"></div>
+      <div id="contenedor-destacado"></div>
       <span id="contador-fechas"></span>
       <div id="contenedor-cartelera"></div>
-      <div id="contenedor-reserva"></div>
     `;
 
-    bannerContainer = document.getElementById('contenedor-banner')!;
+    bannerContainer = document.getElementById('contenedor-destacado')!;
     carteleraContainer = document.getElementById('contenedor-cartelera')!;
     contadorFechasContainer = document.getElementById('contador-fechas')!;
   });
@@ -52,8 +53,8 @@ describe('ConcertBoardView', () => {
     const view = new ConcertBoardView();
     view.showLoading();
 
-    expect(contadorFechasContainer.innerHTML).toContain('Cargando fechas...');
-    expect(bannerContainer.children.length).toBeGreaterThan(0);
+    expect(contadorFechasContainer.innerHTML).toContain('Loading gigs...');
+    expect(bannerContainer.children.length).toBe(1);
     expect(carteleraContainer.children.length).toBe(3);
   });
 
@@ -61,7 +62,7 @@ describe('ConcertBoardView', () => {
     const view = new ConcertBoardView();
     view.renderConcerts(mockConcerts);
 
-    expect(contadorFechasContainer.innerHTML).toContain('3 Fechas Confirmadas');
+    expect(contadorFechasContainer.innerHTML).toContain('3 Confirmed Dates');
     expect(bannerContainer.children.length).toBe(1);
     expect(carteleraContainer.children.length).toBe(2);
   });
@@ -70,17 +71,17 @@ describe('ConcertBoardView', () => {
     const view = new ConcertBoardView();
     view.renderConcerts([mockConcerts[0]]);
 
-    expect(contadorFechasContainer.innerHTML).toContain('1 Fecha Confirmada');
+    expect(contadorFechasContainer.innerHTML).toContain('1 Confirmed Date');
   });
 
   it('debe retornar temprano sin lanzar excepción si no existe el contenedor de cartelera', () => {
-    document.body.innerHTML = ''; // Limpiar DOM
+    document.body.innerHTML = '';
     const view = new ConcertBoardView();
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     view.renderConcerts(mockConcerts);
     expect(consoleSpy).toHaveBeenCalledWith(
-      '[NeonPulse] Error crítico: No se encontró "#contenedor-cartelera" en el DOM.',
+      '[NeonPulse] Critical error: "#contenedor-cartelera" not found in DOM.',
     );
 
     consoleSpy.mockRestore();
@@ -124,23 +125,23 @@ describe('ConcertBoardView', () => {
     const view = new ConcertBoardView();
     view.showEmpty();
 
-    expect(contadorFechasContainer.innerHTML).toContain('0 Fechas Confirmadas');
+    expect(contadorFechasContainer.innerHTML).toContain('0 Confirmed Dates');
     expect(bannerContainer.children.length).toBe(0);
-    expect(carteleraContainer.innerHTML).toContain('No hay conciertos programados por el momento.');
+    expect(carteleraContainer.innerHTML).toContain('No Concerts Found');
   });
 
   it('debe renderizar el estado de error con showError', () => {
     const view = new ConcertBoardView();
     const onRetry = vi.fn();
-    view.showError('Falla de red', onRetry);
+    view.showError('Network Error', onRetry);
 
-    expect(contadorFechasContainer.innerHTML).toContain('0 Fechas Confirmadas');
+    expect(contadorFechasContainer.innerHTML).toContain('0 Confirmed Dates');
     expect(bannerContainer.children.length).toBe(0);
-    expect(carteleraContainer.innerHTML).toContain('Falla de red');
+    expect(carteleraContainer.innerHTML).toContain('Network Error');
   });
 
   it('debe comportarse de forma segura si los elementos del DOM son nulos al llamar showLoading, showEmpty y showError', () => {
-    document.body.innerHTML = ''; // Nodos nulos
+    document.body.innerHTML = '';
     const view = new ConcertBoardView();
 
     expect(() => {
@@ -150,58 +151,30 @@ describe('ConcertBoardView', () => {
     }).not.toThrow();
   });
 
-  it('debe renderizar el formulario de reserva al ejecutar renderConcerts', () => {
-    const view = new ConcertBoardView();
-    view.renderConcerts(mockConcerts);
-
-    const bookingContainer = document.getElementById('contenedor-reserva');
-    expect(bookingContainer?.children.length).toBe(1);
-    expect(bookingContainer?.innerHTML).toContain('Reserva de Entradas');
-  });
-
-  it('debe registrar en consola cuando se completa exitosamente la reserva desde la vista', () => {
-    const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
-    const view = new ConcertBoardView();
-    view.renderConcerts(mockConcerts);
-
-    const bookingContainer = document.getElementById('contenedor-reserva')!;
-    const form = bookingContainer.querySelector('#form-reserva') as HTMLFormElement;
-    const emailInput = bookingContainer.querySelector('#email') as HTMLInputElement;
-    const cantidadInput = bookingContainer.querySelector('#cantidad') as HTMLInputElement;
-
-    emailInput.value = 'fan@punkrock.cl';
-    cantidadInput.value = '4';
-    form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
-
-    expect(consoleSpy).toHaveBeenCalledWith(
-      '[NeonPulse] Reserva realizada con éxito:',
-      expect.objectContaining({ email: 'fan@punkrock.cl', cantidad: 4 })
-    );
-
-    consoleSpy.mockRestore();
-  });
-
-  it('debe limpiar el contenedor de reserva si createBookingFormElement lanza un error', () => {
-    const spy = vi.spyOn(BookingFormModule, 'createBookingFormElement').mockImplementation(() => {
-      throw new Error('Form render error');
+  it('debe despachar evento neonpulse:add-to-cart al llamar selectConcert', () => {
+    let capturedConcert: Concert | null = null;
+    window.addEventListener('neonpulse:add-to-cart', (e: any) => {
+      capturedConcert = e.detail?.concert;
     });
-    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     const view = new ConcertBoardView();
-    view.renderBookingForm(mockConcerts[0]);
+    view.selectConcert(mockConcerts[1]);
 
-    const bookingContainer = document.getElementById('contenedor-reserva');
-    expect(bookingContainer?.children.length).toBe(0);
-
-    spy.mockRestore();
-    consoleSpy.mockRestore();
+    expect(capturedConcert).not.toBeNull();
+    expect(capturedConcert!.id).toBe(mockConcerts[1].id);
   });
 
-  it('debe retornar de forma segura en renderBookingForm si bookingContainer es nulo', () => {
-    document.body.innerHTML = '';
+  it('debe navegar a la vista de detalle con openConcertDetail', () => {
+    let navigatedEvent: any = null;
+    window.addEventListener('neonpulse:navigate', (e: any) => {
+      navigatedEvent = e.detail;
+    });
+
     const view = new ConcertBoardView();
-    expect(() => view.renderBookingForm(mockConcerts[0])).not.toThrow();
+    view.openConcertDetail(mockConcerts[0]);
+
+    expect(navigatedEvent).not.toBeNull();
+    expect(navigatedEvent.view).toBe('detail');
+    expect(navigatedEvent.concert.id).toBe(mockConcerts[0].id);
   });
 });
-
-

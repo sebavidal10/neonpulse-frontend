@@ -7,10 +7,10 @@ import {
 describe('StateViews Components', () => {
   it('debe crear un elemento de estado de error con mensaje y botón de reintento', () => {
     const onRetry = vi.fn();
-    const el = createErrorStateElement('Error al cargar la API', onRetry);
+    const el = createErrorStateElement('Error loading API', onRetry);
 
     expect(el).toBeInstanceOf(HTMLElement);
-    expect(el.innerHTML).toContain('Error al cargar la API');
+    expect(el.innerHTML).toContain('Error loading API');
 
     const button = el.querySelector('button');
     expect(button).not.toBeNull();
@@ -19,14 +19,14 @@ describe('StateViews Components', () => {
   });
 
   it('debe crear un elemento de estado de error sin botón cuando no se proporciona onRetry', () => {
-    const el = createErrorStateElement('Error de conexión');
-    expect(el.innerHTML).toContain('Error de conexión');
+    const el = createErrorStateElement('Network Error');
+    expect(el.innerHTML).toContain('Network Error');
     expect(el.querySelector('button')).toBeNull();
   });
 
   it('debe crear un elemento de estado vacío', () => {
     const el = createEmptyStateElement();
     expect(el).toBeInstanceOf(HTMLElement);
-    expect(el.innerHTML).toContain('No hay conciertos programados por el momento.');
+    expect(el.innerHTML).toContain('No Concerts Found');
   });
 });

@@ -12,7 +12,6 @@ describe('Concert Contract & Integration Tests', () => {
   });
 
   it('debe procesar fielmente el payload real del backend Spring Boot (ConcertResponseDto)', async () => {
-    // Exact schema emitted by neonpulse-api-springboot: List<ConcertResponseDto>
     const springBootPayload = [
       {
         id: 1,
@@ -57,14 +56,14 @@ describe('Concert Contract & Integration Tests', () => {
     // Event 1 (OPEN -> SCHEDULED)
     expect(concerts[0].id).toBe('1');
     expect(concerts[0].band).toBe('The Clash');
-    expect(concerts[0].title).toBe('The Clash - en Vivo Santiago');
+    expect(concerts[0].title).toBe('The Clash - Live in Santiago');
     expect(concerts[0].status).toBe(ConcertStatus.SCHEDULED);
     expect(concerts[0].date).toBeInstanceOf(Date);
 
     // Event 2 (CLOSED -> FINISHED)
     expect(concerts[1].id).toBe('2');
     expect(concerts[1].band).toBe('Sex Pistols');
-    expect(concerts[1].title).toBe('Sex Pistols - en Vivo Valparaíso');
+    expect(concerts[1].title).toBe('Sex Pistols - Live in Valparaíso');
     expect(concerts[1].status).toBe(ConcertStatus.FINISHED);
   });
 });
